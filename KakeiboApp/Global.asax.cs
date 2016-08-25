@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using System.Data.Entity;
+using KakeiboApp.Models;
 
 namespace KakeiboApp
 {
@@ -16,6 +14,8 @@ namespace KakeiboApp
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            Database.SetInitializer<SpendingContext>(new SpendingInitializer());
+            Database.SetInitializer<IncomeContext>(new IncomeInitializer());
         }
     }
 }
