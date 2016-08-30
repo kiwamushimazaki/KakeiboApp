@@ -1,28 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using KakeiboApp.Models;
 
+
 namespace KakeiboApp.Controllers
 {
+
     public class SpendingsController : Controller
     {
+
         private SpendingContext db = new SpendingContext();
 
-        // GET: Spendings
+       
+    
+
+    // GET: Spendings
         public ActionResult Index()
         {
+
+            if (User.Identity.Name == "")
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             return View(db.Spendings.Where(s => s.UserName == User.Identity.Name).ToList());
         }
 
         // GET: Spendings/Create
         public ActionResult Create()
         {
+
+            if (User.Identity.Name == "")
+            {
+                return RedirectToAction("Login", "Account");
+            }
             return View();
         }
 

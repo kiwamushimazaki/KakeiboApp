@@ -1,91 +1,63 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
-using System.Data;
 using KakeiboApp.Models;
+using System.Data;
+using System.Collections.Generic;
+
 
 namespace KakeiboApp.Controllers
 {
     public class DataController : Controller
     {
-        private SpendingContext db = new SpendingContext();
+        private SpendingContext dbs = new SpendingContext();
         private IncomeContext dbi = new IncomeContext();
-
         // GET: Data
-        public ActionResult Index()
+        public ActionResult index()
         {
-            return View(db.Spendings.Where(s => s.UserName == User.Identity.Name).ToList());
-        }
+            var spendingsum = from a in dbs.Spendings
+                              where a.UserName == User.Identity.Name
+                              group a by a.UserName into agroup
+                              select new
+                              {
+                                  UserName = agroup.Key,
+                                  TotalSum = agroup.Sum(a => a.Price)
+                              };
+            var incomesum = from a in dbi.Incomes
+                            where a.UserName == User.Identity.Name
+                            group a by a.UserName into agroup
+                            select new
+                            {
+                                UserName = agroup.Key,
+                                TotalSum = agroup.Sum(a => a.Price)
+                            };
 
-        // GET: Data/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
+            var spsum = spendingsum.FirstOrDefault();
+            var insum = incomesum.FirstOrDefault();
 
-        // GET: Data/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Data/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
+            if(User.Identity.Name == "")
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
+                return RedirectToAction("Login", "Account");
             }
-            catch
+
+            var Data = new Dictionary<string, int>
             {
-                return View();
-            }
+                {"sp" , spsum.TotalSum },
+                {"ic" , insum.TotalSum }
+            };
+            return View(Data);
         }
+        //public ActionResult IncomeSum()
+        //{
+        //    var incomesum = from a in dbi.Incomes
+        //                    where a.UserName == User.Identity.Name
+        //                    group a by a.UserName into agroup
+        //                    select new
+        //                    {
+        //                        UserName = agroup.Key,
+        //                        TotalSum = agroup.Sum(a => a.Price)
+        //                    };
+        //    return View(incomesum);
+        //}
 
-        // GET: Data/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Data/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Data/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Data/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }

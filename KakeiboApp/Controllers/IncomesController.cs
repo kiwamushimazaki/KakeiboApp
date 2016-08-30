@@ -17,6 +17,12 @@ namespace KakeiboApp.Controllers
         // GET: Incomes
         public ActionResult Index()
         {
+
+            if (User.Identity.Name == "")
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             return View(db.Incomes.Where(s => s.UserName == User.Identity.Name).ToList());
         }
         // GET: Incomes/Create
